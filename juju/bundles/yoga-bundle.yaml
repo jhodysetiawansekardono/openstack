@@ -246,7 +246,7 @@ applications:
       data-port: br-ex1:enp2s0
       enable-local-dhcp-and-metadata: true
       use-dvr-snat: true
-      ovs-use-veth: true
+      ovs-use-veth: True
       firewall-driver: openvswitch
   nova-compute:
     charm: cs:nova-compute
