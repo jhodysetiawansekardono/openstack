@@ -13,6 +13,14 @@ applications:
       "": external
       public: internal
       cluster: internal
+      client: internal
+      admin: internal
+      mds: internal
+      mon: internal
+      osd: internal
+      radosgw: internal
+      rbd-mirror: internal
+      bootstrap-source: internal
   ceph-osd:
     charm: cs:ceph-osd
     num_units: 0
@@ -26,6 +34,8 @@ applications:
       "": external
       public: internal
       cluster: internal
+      mon: internal
+      secrets-storage: internal
   mysql:
     charm: ch:mysql-innodb-cluster
     channel: 8.0/stable
@@ -110,7 +120,10 @@ applications:
       rbd-pool-name: cinder_general
       rbd-flatten-volume-from-snapshot: true
     bindings:
+      "": external
+      ceph: internal
       ceph-access: internal
+      ceph-replication-device: internal 
       storage-backend: internal
   cinder-mysql-router:
     charm: cs:mysql-router
