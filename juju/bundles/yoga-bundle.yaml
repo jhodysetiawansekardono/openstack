@@ -176,7 +176,10 @@ applications:
       internal: internal
       admin: external
       shared-db: internal
+      amqp: internal
       identity-service: internal
+      placement: internal
+      cluster: internal
   placement-mysql-router:
     charm: cs:mysql-router
     options:
