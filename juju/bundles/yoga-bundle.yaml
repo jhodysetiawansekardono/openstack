@@ -1,0 +1,368 @@
+series: focal
+applications:
+  ceph-mon:
+    charm: cs:ceph-mon
+    num_units: 0
+    options:
+      source: cloud:focal-yoga/updates
+      customize-failure-domain: false
+      monitor-count: 1
+      expected-osd-count: 3
+      default-rbd-features: 1
+    bindings:
+      "": external
+      public: internal
+      cluster: internal
+   ceph-osd:
+    charm: cs:ceph-osd
+    num_units: 0
+    options:
+      source: cloud:focal-yoga/updates
+      customize-failure-domain: false
+      aa-profile-mode: disable
+      osd-devices: |
+        /dev/disk/by-dname/sdb /dev/disk/by-dname/sdc /dev/disk/by-dname/sdd
+    bindings:
+      "": external
+      public: internal
+      cluster: internal
+  mysql:
+    charm: ch:mysql-innodb-cluster
+    channel: 8.0/stable
+    num_units: 0
+    options:
+      source: cloud:focal-yoga/updates
+      enable-binlogs: true
+      innodb-buffer-pool-size: 6G
+      max-connections: 10000
+      os-db-router-hostname: 192.168.10.105
+    bindings:
+      "": external
+      shared-db: internal
+      db-router: internal
+      cluster: internal
+  rabbitmq-server:
+    charm: cs:rabbitmq-server
+    num_units: 0
+    options:
+      source: cloud:focal-yoga/updates
+      access-network: 192.168.10.0/24
+      cluster-network: 192.168.10.0/24
+      min-cluster-size: 1
+      queue_thresholds: '[[\*, \*, 5000, 7000]]'
+    bindings:
+      "": external
+      amqp: internal
+      cluster: internal
+  keystone:
+    charm: cs:keystone
+    num_units: 0
+    options:
+      openstack-origin: cloud:focal-yoga/updates
+      action-managed-upgrade: true
+      preferred-api-version: 3
+      admin-password: Tru$tNo1
+      region: Borneo
+    bindings:
+      "": external
+      public: external
+      internal: internal
+      admin: external
+      shared-db: internal
+      identity-service: internal
+      identity-admin: external
+      cluster: internal
+  keystone-mysql-router:
+    charm: cs:mysql-router
+    options:
+      source: cloud:focal-yoga/updates
+    bindings:
+      shared-db: internal
+      db-router: internal
+  cinder:
+    charm: cs:cinder
+    num_units: 0
+    options:
+      openstack-origin: cloud:focal-yoga/updates
+      action-managed-upgrade: true
+      use-internal-endpoints: true
+      glance-api-version: 2
+      block-device: None
+      remove-missing: true
+      region: Borneo
+    bindings:
+      "": external
+      public: external
+      internal: internal
+      admin: external
+      shared-db: internal
+      amqp: internal
+      identity-service: internal
+      cinder-volume-service: internal
+      backup-backend: internal
+      storage-backend: internal
+      image-service: internal
+      ceph: internal
+      cluster: internal
+  cinder-ceph:
+    charm: cs:cinder-ceph
+    options:
+      rbd-pool-name: cinder_general
+      rbd-flatten-volume-from-snapshot: true
+    bindings:
+      ceph-access: internal
+      storage-backend: internal
+  cinder-mysql-router:
+    charm: cs:mysql-router
+    options:
+      source: cloud:focal-yoga/updates
+    bindings:
+      shared-db: internal
+      db-router: internal
+  glance:
+    charm: cs:glance
+    num_units: 0
+    options:
+      openstack-origin: cloud:focal-yoga/updates
+      action-managed-upgrade: true
+      use-internal-endpoints: true
+      disk-formats: iso,qcow2,raw
+      rbd-pool-name: glance
+      region: Borneo
+    bindings:
+      "": external
+      public: external
+      internal: internal
+      admin: external
+      shared-db: internal
+      amqp: external
+      identity-service: internal
+      cinder-volume-service: internal
+      image-service: internal
+      ceph: internal
+      cluster: internal
+  glance-mysql-router:
+    charm: cs:mysql-router
+    options:
+      source: cloud:focal-yoga/updates
+    bindings:
+      shared-db: internal
+      db-router: internal
+  placement:
+    charm: cs:placement
+    num_units: 0
+    options:
+      openstack-origin: cloud:focal-yoga/updates
+      action-managed-upgrade: true
+      use-internal-endpoints: true  
+      region: Borneo
+    bindings:
+      "": external
+      shared-db: internal
+      identity-service: internal
+  placement-mysql-router:
+    charm: cs:mysql-router
+    options:
+      source: cloud:focal-yoga/updates
+    bindings:
+      shared-db: internal
+      db-router: internal
+  nova-cloud-controller:
+    charm: cs:nova-cloud-controller
+    num_units: 0
+    options:
+      openstack-origin: cloud:focal-yoga/updates
+      action-managed-upgrade: true
+      use-internal-endpoints: true
+      network-manager: Neutron
+      console-access-protocol: spice
+      cpu-allocation-ratio: 2
+      ram-allocation-ratio: 0.8 
+      config-flags: "reclaim_instance_interval=1209600,vif_plugging_is_fatal=false,vif_plugging_timeout=0"
+      region: Borneo
+    bindings:
+      "": external
+      public: external
+      internal: internal
+      admin: internal
+      shared-db: internal
+      amqp: internal
+      identity-service: internal
+      cinder-volume-service: internal
+      image-service: internal
+      cloud-controller: internal
+      cloud-compute: internal
+      neutron-api: internal
+      placement: internal
+      cluster: internal
+  ncc-mysql-router:
+    charm: cs:mysql-router
+    options:
+      source: cloud:focal-yoga/updates
+    bindings:
+      shared-db: internal
+      db-router: internal
+  neutron-api:
+    charm: cs:neutron-api
+    num_units: 0
+    options:
+      openstack-origin: cloud:focal-yoga/updates
+      action-managed-upgrade: true
+      allow-automatic-l3agent-failover: false
+      default-tenant-network-type: vxlan
+      dhcp-agents-per-network: 2
+      enable-dvr: true
+      enable-fwaas: false
+      enable-l3ha: true
+      flat-network-providers: physnet1
+      manage-neutron-plugin-legacy-mode: true
+      enable-ml2-port-security: true
+      neutron-security-groups: true
+      use-internal-endpoints: true
+      overlay-network-type: vxlan gre
+      path-mtu: 1550
+      physical-network-mtus: physnet1:1500
+      region: Borneo
+    bindings:
+      "": external
+      public: external
+      internal: internal
+      admin: external
+      shared-db: internal
+  neutron-mysql-router:
+    charm: cs:mysql-router
+    options:
+      source: cloud:focal-yoga/updates
+    bindings:
+      shared-db: internal
+      db-router: internal
+  neutron-openvswitch:
+    charm: cs:neutron-openvswitch
+    options:
+      bridge-mappings: physnet1:br-ex1
+      data-port: br-ex1:enp2s0
+      enable-local-dhcp-and-metadata: true
+      use-dvr-snat: true
+      ovs-use-veth: true
+      firewall-driver: openvswitch
+  nova-compute:
+    charm: cs:nova-compute
+    num_units: 0
+    options:
+      openstack-origin: cloud:focal-yoga/updates
+      action-managed-upgrade: true
+      cpu-allocation-ratio: 2
+      ram-allocation-ratio: 0.8
+      cpu-mode: host-passthrough
+      enable-live-migration: true
+      enable-resize: true
+      migration-auth-type: ssh
+      inject-password: true
+      reserved-host-memory: 1024
+      libvirt-migration-network: 192.168.10.0/24
+      live-migration-permit-auto-converge: true
+      live-migration-permit-post-copy: true
+      resume-guests-state-on-host-boot: true
+      use-internal-endpoints: true
+      config-flags: "reclaim_instance_interval=1209600,vif_plugging_is_fatal=false,vif_plugging_timeout=0"
+  ntp:
+    charm: cs:ntp
+    options:
+      auto_peers: true
+      pools: 0.id.pool.ntp.org 1.id.pool.ntp.org 2.id.pool.ntp.org
+      verify_ntp_servers: true
+relations:
+#ceph
+- - ceph-mon:osd
+  - ceph-osd:mon
+- - ceph-mon:client
+  - nova-compute:ceph
+- - ceph-mon:client
+  - glance:ceph
+- - ceph-mon:client
+  - cinder-ceph:ceph
+#openstack-dashboard
+- - dashboard-mysql-router:db-router
+  - mysql:db-router
+- - dashboard-mysql-router:shared-db
+  - openstack-dashboard:shared-db
+- - openstack-dashboard:identity-service
+  - keystone:identity-service
+#placement
+- - placement-mysql-router:db-router
+  - mysql:db-router
+- - placement-mysql-router:shared-db
+  - placement:shared-db
+- - placement:identity-service
+  - keystone:identity-service
+- - placement:placement
+  - nova-cloud-controller:placement
+#nova-cloud-controller
+- - ncc-mysql-router:db-router
+  - mysql:db-router
+- - ncc-mysql-router:shared-db
+  - nova-cloud-controller:shared-db
+- - nova-cloud-controller:identity-service
+  - keystone:identity-service
+- - nova-cloud-controller:amqp
+  - rabbitmq-server:amqp
+- - nova-cloud-controller:neutron-api
+  - neutron-api:neutron-api
+- - nova-cloud-controller:cloud-compute
+  - nova-compute:cloud-compute
+#nova-compute
+- - nova-compute:amqp
+  - rabbitmq-server:amqp
+- - nova-compute:neutron-plugin
+  - neutron-openvswitch:neutron-plugin
+#neutron-api
+- - neutron-mysql-router:db-router
+  - mysql:db-router
+- - neutron-mysql-router:shared-db
+  - neutron-api:shared-db
+- - neutron-api:identity-service
+  - keystone:identity-service
+- - neutron-api:neutron-plugin-api
+  - neutron-openvswitch:neutron-plugin-api
+- - neutron-api:amqp
+  - rabbitmq-server:amqp
+#neutron-openvswitch
+- - neutron-openvswitch:amqp
+  - rabbitmq-server:amqp
+#keystone
+- - keystone-mysql-router:db-router
+  - mysql:db-router
+- - keystone-mysql-router:shared-db
+  - keystone:shared-db
+#glance
+- - glance-mysql-router:db-router
+  - mysql:db-router
+- - glance-mysql-router:shared-db
+  - glance:shared-db
+- - glance:image-service
+  - nova-cloud-controller:image-service
+- - glance:image-service
+  - nova-compute:image-service
+- - glance:image-service
+  - cinder:image-service
+- - glance:identity-service
+  - keystone:identity-service
+#cinder
+- - cinder-mysql-router:db-router
+  - mysql:db-router
+- - cinder-mysql-router:shared-db
+  - cinder:shared-db
+- - cinder:cinder-volume-service
+  - nova-cloud-controller:cinder-volume-service
+- - cinder:amqp
+  - rabbitmq-server:amqp
+- - cinder:identity-service
+  - keystone:identity-service
+#cinder-ceph
+- - cinder-ceph:storage-backend
+  - cinder:storage-backend
+- - cinder-ceph:ceph-access
+  - nova-compute:ceph-access
+#ntp
+- - ntp:juju-info
+  - nova-compute:juju-info
