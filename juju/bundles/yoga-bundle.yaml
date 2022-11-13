@@ -158,6 +158,9 @@ applications:
       region: Borneo
     bindings:
       "": external
+      public: external
+      internal: internal
+      admin: external
       shared-db: internal
       identity-service: internal
   placement-mysql-router:
@@ -184,7 +187,7 @@ applications:
       "": external
       public: external
       internal: internal
-      admin: internal
+      admin: external
       shared-db: internal
       amqp: internal
       identity-service: internal
