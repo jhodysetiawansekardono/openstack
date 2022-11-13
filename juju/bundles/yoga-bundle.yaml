@@ -13,7 +13,7 @@ applications:
       "": external
       public: internal
       cluster: internal
-   ceph-osd:
+  ceph-osd:
     charm: cs:ceph-osd
     num_units: 0
     options:
@@ -271,6 +271,35 @@ applications:
       auto_peers: true
       pools: 0.id.pool.ntp.org 1.id.pool.ntp.org 2.id.pool.ntp.org
       verify_ntp_servers: true
+  openstack-dashboard:
+    charm: cs:openstack-dashboard
+    num_units: 0
+    options:
+      openstack-origin: cloud:focal-yoga/updates
+      action-managed-upgrade: true
+      use-internal-endpoints: true
+      cinder-backup: true
+      default-create-volume: false
+      endpoint-type: publicURL
+      image-formats: iso qcow2 raw
+      neutron-network-l3ha: true
+      password-retrieve: true
+      secret: encryptcookieswithme
+      session-timeout: 7200
+      webroot: /
+    bindings:
+      "": external
+      website: external
+      identity-service: internal
+      shared-db: internal
+      cluster: internal
+  dashboard-mysql-router:
+    charm: cs:mysql-router
+    options:
+      source: cloud:focal-yoga/updates
+    bindings:
+      shared-db: internal
+      db-router: internal
 relations:
 #ceph
 - - ceph-mon:osd
