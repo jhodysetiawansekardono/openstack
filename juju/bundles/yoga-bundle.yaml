@@ -138,6 +138,7 @@ applications:
       amqp: external
       identity-service: internal
       cinder-volume-service: internal
+      storage-backend: internal
       image-service: internal
       ceph: internal
       cluster: internal
