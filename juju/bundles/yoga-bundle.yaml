@@ -11,16 +11,16 @@ applications:
       default-rbd-features: 1
     bindings:
       "": external
-      public: internal
-      cluster: internal
-      client: internal
       admin: internal
+      bootstrap-source: internal
+      client: internal
+      cluster: internal
       mds: internal
       mon: internal
       osd: internal
+      public: internal
       radosgw: internal
       rbd-mirror: internal
-      bootstrap-source: internal
   ceph-osd:
     charm: cs:ceph-osd
     num_units: 0
@@ -32,9 +32,9 @@ applications:
         /dev/disk/by-dname/sdb /dev/disk/by-dname/sdc /dev/disk/by-dname/sdd
     bindings:
       "": external
-      public: internal
       cluster: internal
       mon: internal
+      public: internal
       secrets-storage: internal
   mysql:
     charm: ch:mysql-innodb-cluster
@@ -48,9 +48,11 @@ applications:
       os-db-router-hostname: 192.168.10.105
     bindings:
       "": external
-      shared-db: internal
-      db-router: internal
       cluster: internal
+      coordinator: internal
+      db-monitor: internal
+      db-router: internal
+      shared-db: internal
   rabbitmq-server:
     charm: cs:rabbitmq-server
     num_units: 0
@@ -64,6 +66,7 @@ applications:
       "": external
       amqp: internal
       cluster: internal
+      ha: internal
   keystone:
     charm: cs:keystone
     num_units: 0
@@ -75,18 +78,18 @@ applications:
       region: Borneo
     bindings:
       "": external
-      public: external
-      internal: internal
-      admin: external
-      shared-db: internal
-      identity-service: internal
-      identity-admin: external
       cluster: internal
+      domain-backend: internal
+      ha: internal
+      identity-service: internal
+      internal: internal
+      shared-db: internal
   keystone-mysql-router:
     charm: cs:mysql-router
     options:
       source: cloud:focal-yoga/updates
     bindings:
+      "": external
       shared-db: internal
       db-router: internal
   cinder:
@@ -102,18 +105,17 @@ applications:
       region: Borneo
     bindings:
       "": external
-      public: external
-      internal: internal
-      admin: external
-      shared-db: internal
       amqp: internal
-      identity-service: internal
-      cinder-volume-service: internal
       backup-backend: internal
-      storage-backend: internal
-      image-service: internal
       ceph: internal
+      cinder-volume-service: internal
       cluster: internal
+      ha: internal
+      identity-service: internal
+      image-service: internal
+      internal: internal
+      shared-db: internal
+      storage-backend: internal
   cinder-ceph:
     charm: cs:cinder-ceph
     options:
@@ -123,13 +125,14 @@ applications:
       "": external
       ceph: internal
       ceph-access: internal
-      ceph-replication-device: internal 
+      ceph-replication-device: internal
       storage-backend: internal
   cinder-mysql-router:
     charm: cs:mysql-router
     options:
       source: cloud:focal-yoga/updates
     bindings:
+      "": external
       shared-db: internal
       db-router: internal
   glance:
@@ -144,22 +147,23 @@ applications:
       region: Borneo
     bindings:
       "": external
-      public: external
-      internal: internal
-      admin: external
-      shared-db: internal
-      amqp: external
-      identity-service: internal
-      cinder-volume-service: internal
-      storage-backend: internal
-      image-service: internal
+      amqp: internal
       ceph: internal
+      cinder-volume-service: internal
       cluster: internal
+      ha: internal
+      identity-service: internal
+      image-service: internal
+      internal: internal
+      object-store: internal
+      shared-db: internal
+      storage-backend: internal
   glance-mysql-router:
     charm: cs:mysql-router
     options:
       source: cloud:focal-yoga/updates
     bindings:
+      "": external
       shared-db: internal
       db-router: internal
   placement:
@@ -172,19 +176,19 @@ applications:
       region: Borneo
     bindings:
       "": external
-      public: external
-      internal: internal
-      admin: external
-      shared-db: internal
       amqp: internal
-      identity-service: internal
-      placement: internal
       cluster: internal
+      ha: internal
+      identity-service: internal
+      internal: internal
+      placement: internal
+      shared-db: internal
   placement-mysql-router:
     charm: cs:mysql-router
     options:
       source: cloud:focal-yoga/updates
     bindings:
+      "": external
       shared-db: internal
       db-router: internal
   nova-cloud-controller:
@@ -202,24 +206,28 @@ applications:
       region: Borneo
     bindings:
       "": external
-      public: external
-      internal: internal
-      admin: external
-      shared-db: internal
       amqp: internal
-      identity-service: internal
+      amqp-cell: internal
       cinder-volume-service: internal
-      image-service: internal
-      cloud-controller: internal
       cloud-compute: internal
-      neutron-api: internal
-      placement: internal
+      cloud-controller: internal
       cluster: internal
+      ha: internal
+      identity-service: internal
+      image-service: internal
+      internal: internal
+      memcache: internal
+      neutron-api: internal
+      nova-cell-api: internal
+      placement: internal
+      shared-db: internal
+      shared-db-cell: internal
   ncc-mysql-router:
     charm: cs:mysql-router
     options:
       source: cloud:focal-yoga/updates
     bindings:
+      "": external
       shared-db: internal
       db-router: internal
   neutron-api:
@@ -239,21 +247,28 @@ applications:
       enable-ml2-port-security: true
       neutron-security-groups: true
       use-internal-endpoints: true
-      overlay-network-type: vxlan gre
+      overlay-network-type: vxlan
       path-mtu: 1550
       physical-network-mtus: physnet1:1500
       region: Borneo
     bindings:
       "": external
-      public: external
+      amqp: internal
+      cluster: internal
+      ha: internal
+      identity-service: internal
       internal: internal
-      admin: external
+      neutron-api: internal
+      neutron-load-balancer: internal
+      neutron-plugin-api: internal
+      neutron-plugin-api-subordinate: internal
       shared-db: internal
   neutron-mysql-router:
     charm: cs:mysql-router
     options:
       source: cloud:focal-yoga/updates
     bindings:
+      "": external
       shared-db: internal
       db-router: internal
   neutron-openvswitch:
@@ -264,7 +279,15 @@ applications:
       enable-local-dhcp-and-metadata: true
       use-dvr-snat: true
       ovs-use-veth: "True"
+      os-data-network: 192.168.10.0/24
       firewall-driver: openvswitch
+    bindings:
+      "": external
+      amqp: internal
+      data: internal
+      neutron-control: internal
+      neutron-plugin: internal
+      neutron-plugin-api: internal
   nova-compute:
     charm: cs:nova-compute
     num_units: 0
@@ -285,12 +308,29 @@ applications:
       resume-guests-state-on-host-boot: true
       use-internal-endpoints: true
       config-flags: "reclaim_instance_interval=1209600,vif_plugging_is_fatal=false,vif_plugging_timeout=0"
+    bindings:
+      "": external
+      amqp: internal
+      ceph: internal
+      ceph-access: internal
+      cloud-compute: internal
+      cloud-credentials: internal
+      compute-peer: internal
+      ephemeral-backend: internal
+      image-service: internal
+      internal: internal
+      migration: internal
+      neutron-plugin: internal
+      nova-ceilometer: internal
+      secrets-storage: internal
   ntp:
     charm: cs:ntp
     options:
       auto_peers: true
       pools: 0.id.pool.ntp.org 1.id.pool.ntp.org 2.id.pool.ntp.org
       verify_ntp_servers: true
+    bindings:
+      "": external
   openstack-dashboard:
     charm: cs:openstack-dashboard
     num_units: 0
@@ -309,15 +349,17 @@ applications:
       webroot: /
     bindings:
       "": external
-      website: external
+      cluster: internal
+      dashboard-plugin: internal
+      ha: internal
       identity-service: internal
       shared-db: internal
-      cluster: internal
   dashboard-mysql-router:
     charm: cs:mysql-router
     options:
       source: cloud:focal-yoga/updates
     bindings:
+      "": external
       shared-db: internal
       db-router: internal
 relations:
